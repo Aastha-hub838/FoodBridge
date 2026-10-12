@@ -1,95 +1,85 @@
-# NourishNet 🌱
-### Smart Food Rescue & Donation Platform
+# FoodBridge 🍲
+### Real-time Rescue for Excess Food
 
-Connecting surplus food with communities that need it.
+**Connecting food donors with NGOs to reduce food waste and support communities.**
 
-NourishNet is a web-based food donation platform designed to help food donors and NGOs coordinate surplus food donations. The project aims to reduce avoidable food waste and make food donation more organized and accessible through technology.
+## 📌 About the Project
 
----
+FoodBridge is a web-based food donation platform designed to help donors connect with NGOs and make surplus food easier to discover and distribute.
 
-## 📌 Overview
+The project aims to reduce avoidable food waste by providing a digital platform for food donation and coordination.
 
-Food that is still suitable for consumption can go to waste when there is no convenient way to connect donors with organizations that can distribute it. NourishNet aims to bridge this gap through a digital platform for food donation and discovery.
+## ✨ Features
 
-## ✨ Key Features
+- **Donor Registration:** Provides a registration interface for food donors.
+- **Food Donation Interface:** Allows users to access the donation workflow.
+- **Available Food:** Provides a section to view food listings.
+- **Backend Integration:** Uses Java and Spring Boot for server-side functionality.
+- **Database Integration:** Uses MySQL for persistent data storage.
 
-- **Donor Registration:** A registration interface for food donors.
-- **Food Donation:** An interface for donating surplus food.
-- **Food Discovery:** A section to view available food listings.
-- **Backend Integration:** A Java Spring Boot backend designed to connect the application with a MySQL database.
-- **Future AI Capabilities:** Planned AI-assisted food listing and information processing features.
-
-*Features are being developed incrementally; planned features may not yet be implemented.*
+*Features and integrations are being developed incrementally. Only verified, working functionality should be considered complete.*
 
 ## 🛠️ Tech Stack
 
-| Component | Technologies |
+| Component | Technology |
 |---|---|
 | Frontend | HTML, CSS, JavaScript |
 | Backend | Java, Spring Boot |
 | Database | MySQL |
-| Development Tools | IntelliJ IDEA, MySQL Workbench |
 
-## 🏗️ Architecture
+## 🏗️ Project Architecture
 
-The project is organized into separate frontend and backend repositories.
+FoodBridge is organized into two code repositories.
 
 ```text
-NourishNet
-│
+FoodBridge
 ├── Frontend
 │   ├── index.html
 │   ├── style.css
 │   └── script.js
-│
 ├── Backend
 │   ├── Spring Boot application
-│   ├── REST API controllers
+│   ├── REST controllers
 │   ├── Entities and repositories
 │   └── MySQL integration
-│
 └── Database
     └── MySQL
 ```
 
-The frontend provides the user interface, while the backend handles server-side processing and database communication.
+## 🔗 Source Code
 
-## 🔗 Project Repositories
+- **Frontend:** [FoodBridge Frontend](https://github.com/Aastha-hub838/foodbridge-frontend)
+- **Backend:** [FoodBridge Backend](https://github.com/Aastha-hub838/foodbridge-backend)
 
-- **Frontend:** [View Frontend Repository](https://github.com/Aastha-hub838/foodbridge-frontend)
-- **Backend:** [View Backend Repository](https://github.com/Aastha-hub838/foodbridge-backend)
-
-These repositories currently retain their original names while the project is presented under the NourishNet brand.
-
-## 🚀 Run Locally
+## 🚀 Running Locally
 
 1. Clone the frontend and backend repositories.
-2. Open the backend project in a Java IDE.
-3. Configure a local MySQL database and the required database settings.
+2. Open the backend in IntelliJ IDEA or another compatible Java IDE.
+3. Configure your local MySQL database and database credentials.
 4. Start the Spring Boot backend.
-5. Open the frontend using a local development server.
-6. Ensure the frontend API requests point to the correct backend address.
+5. Run the frontend using a local development server.
+6. Verify that the frontend requests point to the correct backend address.
 
-Keep database credentials and other secrets in local configuration files. Never commit passwords or private credentials to GitHub.
+Never commit database passwords or other secrets to GitHub.
 
 ## 🖼️ Screenshots
 
-Screenshots of the working application will be added here as the interface develops.
+Screenshots of the working FoodBridge application will be added here.
 
-## 🔮 Future Scope
+## 🔮 Future Enhancements
 
 - AI-assisted food listing
 - Improved food discovery and matching
 - NGO claim and pickup coordination
 - Food safety information and verification
-- Enhanced validation and user experience
+- Improved user experience and validation
 
-These are proposed enhancements, not claims of completed functionality.
+These are planned enhancements and should not be treated as implemented features.
 
 ## 🎯 Project Goal
 
-NourishNet explores how web development, database integration, and future AI capabilities can support more effective surplus food donation and help reduce food waste.
+FoodBridge aims to use web development and database integration to make surplus food donation more organized, accessible, and effective.
 
 ---
 
-**Project:** NourishNet — Smart Food Rescue & Donation Platform
+*Developed as a student project focused on reducing food waste through technology.*NourishNet — Smart Food Rescue & Donation Platform
