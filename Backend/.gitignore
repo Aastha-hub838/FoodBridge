@@ -1,0 +1,12 @@
+﻿target/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+application.properties
+.env
+
+src/main/resources/application.properties
+src/main/resources/application.properties

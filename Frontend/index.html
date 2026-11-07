@@ -1,0 +1,160 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#174b36">
+    <title>FoodBridge | Rescue Food, Nourish Lives</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<main class="app-shell">
+
+    <!-- Welcome and role selection -->
+    <section id="login-section" class="screen welcome-screen">
+        <div class="brand-mark" aria-hidden="true">FB</div>
+        <p class="eyebrow">RESCUE FOOD. NOURISH LIVES.</p>
+        <h1>Welcome to <span>FoodBridge</span></h1>
+        <p class="intro">
+            Connecting surplus food with the people who need it.
+            Together, we can make every meal count.
+        </p>
+
+        <div class="role-options">
+            <button type="button" class="role-card"
+                    onclick="openDonorPage()">
+                <span class="role-icon" aria-hidden="true">♧</span>
+                <span class="role-title">I'm a Donor</span>
+                <span class="role-description">
+                        Share surplus food from your home, restaurant or business.
+                    </span>
+                <span class="role-action">Continue as Donor →</span>
+            </button>
+
+            <button type="button" class="role-card"
+                    onclick="openNgoPage()">
+                <span class="role-icon" aria-hidden="true">♡</span>
+                <span class="role-title">I'm an NGO</span>
+                <span class="role-description">
+                        Explore food donations for your community.
+                    </span>
+                <span class="role-action">Continue as NGO →</span>
+            </button>
+        </div>
+
+        <p class="note">
+            Choose your role to continue. Account login will be connected
+            after authentication is implemented in the backend.
+        </p>
+    </section>
+
+    <!-- Donor screen -->
+    <section id="donor-page" class="screen dashboard-screen"
+             style="display: none;">
+        <button type="button" class="back-button"
+                onclick="showHome()">← Back to home</button>
+
+        <p class="eyebrow">FOODBRIDGE COMMUNITY</p>
+        <h1>Donor <span>Dashboard</span></h1>
+        <p class="intro">
+            Make your surplus food count. Register to get started,
+            or explore the available food listings.
+        </p>
+
+        <div class="dashboard-actions">
+            <button type="button" onclick="showDonateForm()">
+                Register as a Donor
+            </button>
+            <button type="button" class="secondary-button"
+                    onclick="showFood()">
+                View Available Food
+            </button>
+        </div>
+
+        <section id="donor-section" class="content-card"
+                 style="display: none;">
+            <h2>Create your donor account</h2>
+            <p class="section-description">
+                Enter your details to join the FoodBridge community.
+            </p>
+
+            <form id="donor-form">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name"
+                       autocomplete="name" required>
+
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email"
+                       autocomplete="email" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       autocomplete="new-password"
+                       minlength="8" required>
+
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone"
+                       autocomplete="tel">
+
+                <label for="address">Pickup or Contact Address</label>
+                <input type="text" id="address" name="address"
+                       autocomplete="street-address">
+
+                <button type="submit">Register as Donor</button>
+            </form>
+
+            <p id="donor-message" role="status" aria-live="polite"></p>
+        </section>
+
+        <section id="food-section" class="content-card"
+                 style="display: none;">
+            <h2>Available Food</h2>
+            <p class="section-description">
+                Check the food listings currently available.
+            </p>
+            <button type="button" onclick="loadFood()">
+                Refresh Food List
+            </button>
+            <div id="food-list" aria-live="polite"></div>
+        </section>
+    </section>
+
+    <!-- NGO screen -->
+    <section id="ngo-page" class="screen dashboard-screen"
+             style="display: none;">
+        <button type="button" class="back-button"
+                onclick="showHome()">← Back to home</button>
+
+        <p class="eyebrow">FOR COMMUNITY ORGANISATIONS</p>
+        <h1>NGO <span>Dashboard</span></h1>
+        <p class="intro">
+            Find food donations and help redirect surplus food
+            to the people who need it.
+        </p>
+
+        <div class="ngo-info-card">
+            <h2>Available food donations</h2>
+            <p>
+                Food listings will appear here once the food API
+                is implemented and connected.
+            </p>
+            <button type="button" onclick="showNgoFood()">
+                View Food Listings
+            </button>
+            <div id="ngo-food-list" aria-live="polite"></div>
+        </div>
+
+        <p class="note">
+            NGO registration, sign-in and donation claiming are not
+            connected yet.
+        </p>
+    </section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
