@@ -1,7 +1,9 @@
 
+
 const API_URL = "http://localhost:8080/api";
 
-// Navigation
+// ==================== NAVIGATION ====================
+
 function showHome() {
     document.getElementById("login-section").style.display = "block";
     document.getElementById("donor-page").style.display = "none";
@@ -18,475 +20,598 @@ function openNgoPage() {
     document.getElementById("login-section").style.display = "none";
     document.getElementById("donor-page").style.display = "none";
     document.getElementById("ngo-page").style.display = "block";
+    updateNgoView();
 }
 
-// Donor dashboard sections
+// ==================== DONOR NAVIGATION ====================
+
+function hideDonorSections() {
+    [
+        "donor-section",
+        "food-section",
+        "food-donation-section",
+        "my-donations-section"
+    ].forEach(id => {
+        const section = document.getElementById(id);
+        if (section) section.style.display = "none";
+    });
+}
+
 function showDonateForm() {
+    hideDonorSections();
     document.getElementById("donor-section").style.display = "block";
-    document.getElementById("food-section").style.display = "none";
-    document.getElementById("food-donation-section").style.display = "none";
-    document.getElementById("my-donations-section").style.display = "none";
 }
 
 function showFood() {
+    hideDonorSections();
     document.getElementById("food-section").style.display = "block";
-    document.getElementById("donor-section").style.display = "none";
-    document.getElementById("food-donation-section").style.display = "none";
-    document.getElementById("my-donations-section").style.display = "none";
+    loadFood();
 }
 
 function showFoodDonationForm() {
-    document.getElementById("donor-section").style.display = "none";
-    document.getElementById("food-section").style.display = "none";
+    hideDonorSections();
     document.getElementById("food-donation-section").style.display = "block";
-    document.getElementById("my-donations-section").style.display = "none";
 }
 
-// Show My Donations
 function showMyDonations() {
-    document.getElementById("donor-section").style.display = "none";
-    document.getElementById("food-section").style.display = "none";
-    document.getElementById("food-donation-section").style.display = "none";
+    hideDonorSections();
     document.getElementById("my-donations-section").style.display = "block";
 }
 
-// Load donations belonging to a donor
-async function loadMyDonations() {
-    const donorId = document.getElementById("myDonorId").value.trim();
-    const donationList = document.getElementById("my-donations-list");
-    const message = document.getElementById("my-donations-message");
+// ==================== DONOR REGISTRATION ====================
 
-    donationList.replaceChildren();
-    message.textContent = "";
-
-    if (!donorId || Number(donorId) <= 0) {
-        message.textContent = "Please enter a valid Donor ID.";
-        return;
-    }
-
-    message.textContent = "Loading your donations...";
-
-    try {
-        const response = await fetch(`${API_URL}/food/donor/${donorId}`);
-        const result = await response.json();
-
-        if (!response.ok) {
-            throw new Error(result.message || "Could not load your donations.");
-        }
-
-        message.textContent = "";
-
-        if (!Array.isArray(result) || result.length === 0) {
-            message.textContent = "You have not submitted any food donations yet.";
-            return;
-        }
-
-        result.forEach(food => {
-            const card = document.createElement("article");
-            card.className = "food-item";
-
-            const title = document.createElement("h3");
-            title.textContent = food.foodName || "Food Donation";
-
-            const donationId = document.createElement("p");
-            donationId.textContent = `Donation ID: ${food.donationId}`;
-
-            const quantity = document.createElement("p");
-            quantity.textContent =
-                `Quantity: ${food.quantity ?? "Not listed"} ${food.unit ?? ""}`;
-
-            const foodType = document.createElement("p");
-            foodType.textContent =
-                `Food Type: ${food.foodType || "Not specified"}`;
-
-            const address = document.createElement("p");
-            address.textContent =
-                `Pickup Address: ${food.pickupAddress || "Not listed"}`;
-
-            const expiry = document.createElement("p");
-            expiry.textContent =
-                `Expiry Time: ${food.expiryTime || "Not specified"}`;
-
-            const status = document.createElement("p");
-            status.textContent = `Status: ${food.status || "Unknown"}`;
-
-            card.append(
-                title,
-                donationId,
-                quantity,
-                foodType,
-                address,
-                expiry,
-                status
-            );
-
-            // Show Edit and Cancel only for available donations
-            if (food.status === "AVAILABLE") {
-                const editButton = document.createElement("button");
-                editButton.type = "button";
-                editButton.textContent = "Edit Donation";
-
-                editButton.addEventListener("click", () => {
-                    editDonation(food, donorId);
-                });
-
-                const cancelButton = document.createElement("button");
-                cancelButton.type = "button";
-                cancelButton.textContent = "Cancel Donation";
-
-                cancelButton.addEventListener("click", () => {
-                    cancelDonation(food.donationId, donorId);
-                });
-
-                card.append(editButton, cancelButton);
-            }
-
-            donationList.appendChild(card);
-        });
-
-        message.textContent = `Found ${result.length} donation(s).`;
-
-    } catch (error) {
-        message.textContent = error.message.includes("Failed to fetch")
-            ? "Cannot connect to the server. Please check whether the backend is running."
-            : error.message;
-    }
-}
-
-// Edit an existing donation
-async function editDonation(food, donorId) {
-
-    const foodName = prompt("Enter food name:", food.foodName || "");
-    if (foodName === null) return;
-
-    const description = prompt(
-        "Enter food description:",
-        food.description || ""
-    );
-    if (description === null) return;
-
-    const quantity = prompt("Enter quantity:", food.quantity ?? "");
-    if (quantity === null) return;
-
-    const unit = prompt("Enter unit (kg, plates, etc.):", food.unit || "");
-    if (unit === null) return;
-
-    const foodType = prompt(
-        "Enter food type:",
-        food.foodType || ""
-    );
-    if (foodType === null) return;
-
-    const preparedAt = prompt(
-        "Enter preparation date and time (YYYY-MM-DDTHH:mm):",
-        food.preparedAt ? food.preparedAt.substring(0, 16) : ""
-    );
-    if (preparedAt === null) return;
-
-    const expiryTime = prompt(
-        "Enter expiry date and time (YYYY-MM-DDTHH:mm):",
-        food.expiryTime ? food.expiryTime.substring(0, 16) : ""
-    );
-    if (expiryTime === null) return;
-
-    const pickupAddress = prompt(
-        "Enter pickup address:",
-        food.pickupAddress || ""
-    );
-    if (pickupAddress === null) return;
-
-    const contactNumber = prompt(
-        "Enter contact number:",
-        food.contactNumber || ""
-    );
-    if (contactNumber === null) return;
-
-    const instructions = prompt(
-        "Enter pickup instructions:",
-        food.instructions || ""
-    );
-    if (instructions === null) return;
-
-    if (!foodName.trim() || !quantity.trim() ||
-        !unit.trim() || !expiryTime.trim() ||
-        !pickupAddress.trim() ||
-        !Number.isFinite(Number(quantity)) ||
-        Number(quantity) <= 0) {
-
-        alert("Please enter valid values in all required fields.");
-        return;
-    }
-
-    const updatedDonation = {
-        foodName: foodName.trim(),
-        description: description.trim(),
-        quantity: Number(quantity),
-        unit: unit.trim(),
-        foodType: foodType.trim(),
-        preparedAt: preparedAt.trim() || null,
-        expiryTime: expiryTime.trim(),
-        pickupAddress: pickupAddress.trim(),
-        contactNumber: contactNumber.trim(),
-        instructions: instructions.trim()
-    };
-
-    try {
-        const response = await fetch(
-            `${API_URL}/food/${food.donationId}?donorId=${donorId}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(updatedDonation)
-            }
-        );
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            throw new Error(result.message || "Could not update donation.");
-        }
-
-        alert("Donation updated successfully!");
-        loadMyDonations();
-
-    } catch (error) {
-        alert(error.message.includes("Failed to fetch")
-            ? "Cannot connect to the backend."
-            : error.message);
-    }
-}
-
-// Cancel an existing donation
-async function cancelDonation(donationId, donorId) {
-
-    const confirmed = confirm(
-        "Are you sure you want to cancel this food donation?"
-    );
-
-    if (!confirmed) return;
-
-    try {
-        const response = await fetch(
-            `${API_URL}/food/${donationId}/cancel?donorId=${donorId}`,
-            {
-                method: "PATCH"
-            }
-        );
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            throw new Error(result.message || "Could not cancel donation.");
-        }
-
-        alert("Donation cancelled successfully!");
-        loadMyDonations();
-
-    } catch (error) {
-        alert(error.message.includes("Failed to fetch")
-            ? "Cannot connect to the backend."
-            : error.message);
-    }
-}
-
-// NGO food listings
-async function showNgoFood() {
-
-    const list = document.getElementById("ngo-food-list");
-    list.textContent = "Loading food listings...";
-
-    try {
-        const response = await fetch(`${API_URL}/food`);
-
-        if (!response.ok) {
-            throw new Error("Food API is not available yet.");
-        }
-
-        const foods = await response.json();
-        list.replaceChildren();
-
-        if (!Array.isArray(foods) || foods.length === 0) {
-            list.textContent = "No food donations are available yet.";
-            return;
-        }
-
-        foods.forEach(food => {
-
-            const card = document.createElement("article");
-            card.className = "food-item";
-
-            const title = document.createElement("h3");
-            title.textContent = food.foodName || "Food donation";
-
-            const quantity = document.createElement("p");
-            quantity.textContent =
-                `Quantity: ${food.quantity ?? "Not listed"} ${food.unit ?? ""}`;
-
-            const address = document.createElement("p");
-            address.textContent =
-                `Pickup location: ${food.pickupAddress || "Not listed"}`;
-
-            const status = document.createElement("p");
-            status.textContent = `Status: ${food.status || "Unknown"}`;
-
-            card.append(title, quantity, address, status);
-            list.appendChild(card);
-        });
-
-    } catch (error) {
-        list.textContent =
-            "Food listings cannot be loaded. Please check the backend.";
-    }
-}
-
-// Donor registration
-const donorForm = document.getElementById("donor-form");
-
-donorForm.addEventListener("submit", async function (event) {
-
+document.getElementById("donor-form").addEventListener("submit", async function (event) {
     event.preventDefault();
 
-    const message = document.getElementById("donor-message");
-    const formData = new FormData(this);
-
     const donor = {
-        name: formData.get("name").trim(),
-        email: formData.get("email").trim(),
-        password: formData.get("password"),
-        phone: formData.get("phone").trim(),
-        address: formData.get("address").trim()
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value,
+        phone: document.getElementById("phone").value,
+        address: document.getElementById("address").value
     };
 
-    message.textContent = "Registering...";
+    const message = document.getElementById("donor-message");
 
     try {
         const response = await fetch(`${API_URL}/donors`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(donor)
         });
 
         const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(
-                result.message || "Registration failed. Please check your details."
-            );
+            throw new Error(result.message || result.error || "Registration failed.");
         }
 
-        message.textContent =
-            `Registration successful! Welcome, ${result.name}.`;
-
+        message.textContent = result.message || "Registration successful!";
+        message.style.color = "green";
         this.reset();
 
     } catch (error) {
-        message.textContent = error.message.includes("Failed to fetch")
-            ? "Cannot connect to the server. Make sure the FoodBridge backend is running."
-            : error.message;
+        message.textContent = error.message || "Cannot connect to backend.";
+        message.style.color = "red";
     }
 });
 
-// Food donation form submission
-const foodDonationForm = document.getElementById("food-donation-form");
+// ==================== FOOD DONATION ====================
 
-foodDonationForm.addEventListener("submit", async function (event) {
-
+document.getElementById("food-donation-form").addEventListener("submit", async function (event) {
     event.preventDefault();
 
-    const message = document.getElementById("food-donation-message");
-    const formData = new FormData(this);
-
-    const foodDonation = {
-        donorId: Number(formData.get("donorId")),
-        foodName: formData.get("foodName").trim(),
-        description: formData.get("description").trim(),
-        quantity: Number(formData.get("quantity")),
-        unit: formData.get("unit"),
-        foodType: formData.get("foodType").trim(),
-        preparedAt: formData.get("preparedAt") || null,
-        expiryTime: formData.get("expiryTime"),
-        pickupAddress: formData.get("pickupAddress").trim(),
-        contactNumber: formData.get("contactNumber").trim(),
-        instructions: formData.get("instructions").trim()
+    const donation = {
+        donorId: Number(document.getElementById("donorId").value),
+        foodName: document.getElementById("foodName").value,
+        description: document.getElementById("description").value,
+        quantity: Number(document.getElementById("quantity").value),
+        unit: document.getElementById("unit").value,
+        foodType: document.getElementById("foodType").value,
+        preparedAt: document.getElementById("preparedAt").value,
+        expiryTime: document.getElementById("expiryTime").value,
+        pickupAddress: document.getElementById("pickupAddress").value,
+        contactNumber: document.getElementById("contactNumber").value,
+        instructions: document.getElementById("instructions").value
     };
 
-    message.textContent = "Submitting food donation...";
+    const message = document.getElementById("food-donation-message");
 
     try {
         const response = await fetch(`${API_URL}/food`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(foodDonation)
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(donation)
         });
 
         const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(
-                result.message || "Food donation submission failed."
-            );
+            throw new Error(result.message || result.error || "Donation submission failed.");
         }
 
         message.textContent =
-            `Success! ${result.message} Donation ID: ${result.donationId}`;
-
+            `Success! Food donation submitted successfully! Donation ID: ${result.donationId}`;
+        message.style.color = "green";
         this.reset();
 
     } catch (error) {
-        message.textContent = error.message.includes("Failed to fetch")
-            ? "Cannot connect to the server. Check whether the backend is running."
-            : error.message;
+        message.textContent = error.message || "Cannot connect to backend.";
+        message.style.color = "red";
     }
 });
 
-// Available food listing
-async function loadFood() {
+// ==================== AVAILABLE FOOD ====================
 
+async function loadFood() {
     const foodList = document.getElementById("food-list");
-    foodList.textContent = "Loading...";
+    foodList.innerHTML = "<p>Loading available food...</p>";
 
     try {
         const response = await fetch(`${API_URL}/food`);
 
         if (!response.ok) {
-            throw new Error("Could not load available food.");
+            throw new Error("Unable to load available food.");
         }
 
         const foods = await response.json();
-        foodList.replaceChildren();
 
-        if (!Array.isArray(foods) || foods.length === 0) {
-            foodList.textContent = "No food donations are available yet.";
+        if (!foods || foods.length === 0) {
+            foodList.innerHTML = "<p>No available food donations right now.</p>";
             return;
         }
 
+        foodList.innerHTML = "";
+
         foods.forEach(food => {
+            const card = document.createElement("div");
+            card.className = "food-card";
 
-            const item = document.createElement("article");
-            item.className = "food-item";
+            card.innerHTML = `
+                <h3>${food.foodName || "Food donation"}</h3>
+                <p><strong>Description:</strong> ${food.description || "Not provided"}</p>
+                <p><strong>Quantity:</strong> ${food.quantity || ""} ${food.unit || ""}</p>
+                <p><strong>Food Type:</strong> ${food.foodType || "Not specified"}</p>
+                <p><strong>Pickup Address:</strong> ${food.pickupAddress || "Not provided"}</p>
+                <p><strong>Expiry:</strong> ${food.expiryTime || "Not specified"}</p>
+                <p><strong>Status:</strong> ${food.status || "AVAILABLE"}</p>
+            `;
 
-            const title = document.createElement("h3");
-            title.textContent = food.foodName || "Food donation";
-
-            const details = document.createElement("p");
-            details.textContent =
-                `${food.quantity ?? "Quantity not listed"} ${food.unit ?? ""}`;
-
-            item.append(title, details);
-            foodList.appendChild(item);
+            foodList.appendChild(card);
         });
 
     } catch (error) {
-        foodList.textContent =
-            "Food listings cannot be loaded. Please check the backend.";
+        foodList.innerHTML = `<p style="color:red;">${error.message}</p>`;
     }
 }
 
+// ==================== MY DONATIONS ====================
 
+async function loadMyDonations() {
+    const donorId = document.getElementById("myDonorId").value;
+    const list = document.getElementById("my-donations-list");
+    const message = document.getElementById("my-donations-message");
 
+    if (!donorId) {
+        message.textContent = "Please enter your Donor ID.";
+        message.style.color = "red";
+        return;
+    }
+
+    list.innerHTML = "<p>Loading your donations...</p>";
+    message.textContent = "";
+
+    try {
+        const response = await fetch(`${API_URL}/food/donor/${donorId}`);
+
+        if (!response.ok) {
+            throw new Error("Unable to load your donations.");
+        }
+
+        const donations = await response.json();
+
+        if (!donations || donations.length === 0) {
+            list.innerHTML = "<p>No donations found for this Donor ID.</p>";
+            return;
+        }
+
+        list.innerHTML = "";
+
+        donations.forEach(food => {
+            const card = document.createElement("div");
+            card.className = "food-card";
+
+            card.innerHTML = `
+                <h3>${food.foodName || "Food donation"}</h3>
+                <p><strong>Donation ID:</strong> ${food.donationId}</p>
+                <p><strong>Quantity:</strong> ${food.quantity} ${food.unit || ""}</p>
+                <p><strong>Status:</strong> ${food.status}</p>
+                <p><strong>Pickup Address:</strong> ${food.pickupAddress || ""}</p>
+                <button onclick="editDonation(${food.donationId}, ${donorId})">Edit</button>
+                <button onclick="cancelDonation(${food.donationId}, ${donorId})">Cancel</button>
+            `;
+
+            list.appendChild(card);
+        });
+
+    } catch (error) {
+        list.innerHTML = `<p style="color:red;">${error.message}</p>`;
+    }
+}
+
+// ==================== EDIT DONATION ====================
+
+async function editDonation(donationId, donorId) {
+    const newQuantity = prompt("Enter the updated quantity:");
+
+    if (newQuantity === null) return;
+
+    if (!newQuantity.trim() || Number(newQuantity) <= 0) {
+        alert("Please enter a valid quantity.");
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `${API_URL}/food/${donationId}?donorId=${donorId}`,
+            {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    quantity: Number(newQuantity)
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Unable to update donation.");
+        }
+
+        alert("Donation updated successfully!");
+        loadMyDonations();
+
+    } catch (error) {
+        alert(error.message || "Cannot connect to backend.");
+    }
+}
+
+// ==================== CANCEL DONATION ====================
+
+async function cancelDonation(donationId, donorId) {
+    if (!confirm("Are you sure you want to cancel this donation?")) {
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `${API_URL}/food/${donationId}/cancel?donorId=${donorId}`,
+            { method: "PATCH" }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Unable to cancel donation.");
+        }
+
+        alert("Donation cancelled successfully!");
+        loadMyDonations();
+
+    } catch (error) {
+        alert(error.message || "Cannot connect to backend.");
+    }
+}
+
+// ==================== NGO LOGIN STATE ====================
+
+function getLoggedInNgo() {
+    const storedNgo = localStorage.getItem("foodbridgeNgo");
+
+    if (!storedNgo) return null;
+
+    try {
+        return JSON.parse(storedNgo);
+    } catch {
+        localStorage.removeItem("foodbridgeNgo");
+        return null;
+    }
+}
+
+function updateNgoView() {
+    const ngo = getLoggedInNgo();
+
+    document.getElementById("ngo-auth-actions").style.display =
+        ngo ? "none" : "block";
+
+    document.getElementById("ngo-register-section").style.display = "none";
+    document.getElementById("ngo-login-section").style.display = "none";
+
+    document.getElementById("ngo-dashboard-content").style.display =
+        ngo ? "block" : "none";
+
+    if (ngo) {
+        document.getElementById("ngo-welcome-heading").textContent =
+            `Welcome, ${ngo.name}!`;
+
+        document.getElementById("ngo-account-details").textContent =
+            `NGO ID: ${ngo.ngoId} | Email: ${ngo.email}`;
+    }
+}
+
+// ==================== NGO NAVIGATION ====================
+
+function showNgoRegister() {
+    document.getElementById("ngo-auth-actions").style.display = "none";
+    document.getElementById("ngo-login-section").style.display = "none";
+    document.getElementById("ngo-register-section").style.display = "block";
+}
+
+function showNgoLogin() {
+    document.getElementById("ngo-auth-actions").style.display = "none";
+    document.getElementById("ngo-register-section").style.display = "none";
+    document.getElementById("ngo-login-section").style.display = "block";
+}
+
+function hideNgoDashboardSections() {
+    document.getElementById("ngo-food-section").style.display = "none";
+    document.getElementById("ngo-claims-section").style.display = "none";
+}
+
+function showNgoFood() {
+    hideNgoDashboardSections();
+    document.getElementById("ngo-food-section").style.display = "block";
+    loadNgoFood();
+}
+
+function showNgoClaims() {
+    hideNgoDashboardSections();
+    document.getElementById("ngo-claims-section").style.display = "block";
+    loadNgoClaims();
+}
+
+// ==================== NGO REGISTRATION ====================
+
+document.getElementById("ngo-register-form").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const message = document.getElementById("ngo-register-message");
+
+    const ngo = {
+        name: document.getElementById("ngoName").value,
+        email: document.getElementById("ngoEmail").value,
+        passwordHash: document.getElementById("ngoPassword").value,
+        phone: document.getElementById("ngoPhone").value,
+        address: document.getElementById("ngoAddress").value,
+        city: document.getElementById("ngoCity").value
+    };
+
+    try {
+        const response = await fetch(`${API_URL}/ngos/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(ngo)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || result.error || "NGO registration failed.");
+        }
+
+        message.textContent = result.message || "NGO registered successfully!";
+        message.style.color = "green";
+
+        document.getElementById("ngoLoginEmail").value = ngo.email;
+
+        this.reset();
+
+        showNgoLogin();
+
+        document.getElementById("ngo-login-message").textContent =
+            "Registration successful! Please log in.";
+
+        document.getElementById("ngo-login-message").style.color = "green";
+
+    } catch (error) {
+        message.textContent = error.message || "Cannot connect to backend.";
+        message.style.color = "red";
+    }
+});
+
+// ==================== NGO LOGIN ====================
+
+document.getElementById("ngo-login-form").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const message = document.getElementById("ngo-login-message");
+
+    const credentials = {
+        email: document.getElementById("ngoLoginEmail").value,
+        passwordHash: document.getElementById("ngoLoginPassword").value
+    };
+
+    try {
+        const response = await fetch(`${API_URL}/ngos/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(credentials)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || result.error || "NGO login failed.");
+        }
+
+        const ngo = {
+            ngoId: result.ngoId,
+            name: result.name,
+            email: result.email
+        };
+
+        localStorage.setItem("foodbridgeNgo", JSON.stringify(ngo));
+
+        updateNgoView();
+
+        alert(`Welcome, ${ngo.name}!`);
+
+        showNgoFood();
+
+    } catch (error) {
+        message.textContent = error.message || "Cannot connect to backend.";
+        message.style.color = "red";
+    }
+});
+
+// ==================== NGO LOGOUT ====================
+
+function ngoLogout() {
+    localStorage.removeItem("foodbridgeNgo");
+    updateNgoView();
+    alert("You have been logged out.");
+}
+
+// ==================== NGO AVAILABLE FOOD ====================
+
+async function loadNgoFood() {
+    const ngo = getLoggedInNgo();
+    const list = document.getElementById("ngo-food-list");
+
+    if (!ngo) {
+        list.innerHTML = "<p>Please log in first.</p>";
+        return;
+    }
+
+    list.innerHTML = "<p>Loading available food...</p>";
+
+    try {
+        const response = await fetch(`${API_URL}/food`);
+
+        if (!response.ok) {
+            throw new Error("Unable to load available food.");
+        }
+
+        const foods = await response.json();
+
+        if (!foods || foods.length === 0) {
+            list.innerHTML = "<p>No available food donations right now.</p>";
+            return;
+        }
+
+        list.innerHTML = "";
+
+        foods.forEach(food => {
+            const card = document.createElement("div");
+            card.className = "food-card";
+
+            card.innerHTML = `
+                <h3>${food.foodName || "Food donation"}</h3>
+                <p><strong>Donation ID:</strong> ${food.donationId}</p>
+                <p><strong>Description:</strong> ${food.description || "Not provided"}</p>
+                <p><strong>Quantity:</strong> ${food.quantity || ""} ${food.unit || ""}</p>
+                <p><strong>Food Type:</strong> ${food.foodType || "Not specified"}</p>
+                <p><strong>Pickup Address:</strong> ${food.pickupAddress || "Not provided"}</p>
+                <p><strong>Contact:</strong> ${food.contactNumber || "Not provided"}</p>
+                <p><strong>Expiry:</strong> ${food.expiryTime || "Not specified"}</p>
+                <button onclick="claimFood(${food.donationId})">Claim Food</button>
+            `;
+
+            list.appendChild(card);
+        });
+
+    } catch (error) {
+        list.innerHTML = `<p style="color:red;">${error.message}</p>`;
+    }
+}
+
+// ==================== CLAIM FOOD ====================
+
+async function claimFood(donationId) {
+    const ngo = getLoggedInNgo();
+
+    if (!ngo) {
+        alert("Please log in first.");
+        return;
+    }
+
+    if (!confirm("Are you sure you want to claim this food donation?")) {
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `${API_URL}/claims/${donationId}/ngo/${ngo.ngoId}`,
+            { method: "POST" }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || result.error || "Unable to claim food.");
+        }
+
+        alert("Food claimed successfully!");
+
+        loadNgoFood();
+
+    } catch (error) {
+        alert(error.message || "Cannot connect to backend.");
+    }
+}
+
+// ==================== NGO MY CLAIMS ====================
+
+async function loadNgoClaims() {
+    const ngo = getLoggedInNgo();
+    const list = document.getElementById("ngo-claims-list");
+
+    if (!ngo) {
+        list.innerHTML = "<p>Please log in first.</p>";
+        return;
+    }
+
+    list.innerHTML = "<p>Loading your claims...</p>";
+
+    try {
+        const response = await fetch(`${API_URL}/claims/ngo/${ngo.ngoId}`);
+
+        if (!response.ok) {
+            throw new Error("Unable to load your claims.");
+        }
+
+        const claims = await response.json();
+
+        if (!claims || claims.length === 0) {
+            list.innerHTML = "<p>You have not claimed any food yet.</p>";
+            return;
+        }
+
+        list.innerHTML = "";
+
+        claims.forEach(claim => {
+            const card = document.createElement("div");
+            card.className = "food-card";
+
+            card.innerHTML = `
+                <h3>${claim.foodName || "Food donation"}</h3>
+                <p><strong>Claim ID:</strong> ${claim.claimId}</p>
+                <p><strong>Donation ID:</strong> ${claim.donationId}</p>
+                <p><strong>Quantity:</strong> ${claim.quantity || ""} ${claim.unit || ""}</p>
+                <p><strong>Pickup Address:</strong> ${claim.pickupAddress || "Not provided"}</p>
+                <p><strong>Contact:</strong> ${claim.contactNumber || "Not provided"}</p>
+                <p><strong>Expiry:</strong> ${claim.expiryTime || "Not specified"}</p>
+                <p><strong>Claim Status:</strong> ${claim.status || "CLAIMED"}</p>
+            `;
+
+            list.appendChild(card);
+        });
+
+    } catch (error) {
+        list.innerHTML = `<p style="color:red;">${error.message}</p>`;
+    }
+}
+
+// Restore NGO login after page refresh
+updateNgoView();
