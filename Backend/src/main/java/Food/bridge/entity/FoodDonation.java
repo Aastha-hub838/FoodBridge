@@ -14,86 +14,138 @@ public class FoodDonation {
     @Column(name = "donation_id")
     private Integer donationId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "donor_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "donor_id")
     private Donor donor;
 
-    @Column(name = "food_name", nullable = false, length = 150)
     private String foodName;
-
-    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(precision = 10, scale = 2)
     private BigDecimal quantity;
 
-    @Column(nullable = false, length = 30)
     private String unit;
-
-    @Column(name = "food_type", length = 50)
     private String foodType;
-
-    @Column(name = "prepared_at")
     private LocalDateTime preparedAt;
-
-    @Column(name = "expiry_time", nullable = false)
     private LocalDateTime expiryTime;
-
-    @Column(name = "pickup_address", nullable = false, length = 255)
     private String pickupAddress;
-
-    @Column(name = "contact_number", length = 20)
     private String contactNumber;
-
-    @Column(columnDefinition = "TEXT")
     private String instructions;
-
-    @Column(length = 30, insertable = false)
-    private String status = "AVAILABLE";
-
-    @Column(name = "created_at", insertable = false, updatable = false)
+    private String status;
     private LocalDateTime createdAt;
 
     public FoodDonation() {
     }
 
-    public Integer getDonationId() { return donationId; }
-    public void setDonationId(Integer donationId) { this.donationId = donationId; }
+    public Integer getDonationId() {
+        return donationId;
+    }
 
-    public Donor getDonor() { return donor; }
-    public void setDonor(Donor donor) { this.donor = donor; }
+    public void setDonationId(Integer donationId) {
+        this.donationId = donationId;
+    }
 
-    public String getFoodName() { return foodName; }
-    public void setFoodName(String foodName) { this.foodName = foodName; }
+    public Donor getDonor() {
+        return donor;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public void setDonor(Donor donor) {
+        this.donor = donor;
+    }
 
-    public BigDecimal getQuantity() { return quantity; }
-    public void setQuantity(BigDecimal quantity) { this.quantity = quantity; }
+    public String getFoodName() {
+        return foodName;
+    }
 
-    public String getUnit() { return unit; }
-    public void setUnit(String unit) { this.unit = unit; }
+    public void setFoodName(String foodName) {
+        this.foodName = foodName;
+    }
 
-    public String getFoodType() { return foodType; }
-    public void setFoodType(String foodType) { this.foodType = foodType; }
+    public String getDescription() {
+        return description;
+    }
 
-    public LocalDateTime getPreparedAt() { return preparedAt; }
-    public void setPreparedAt(LocalDateTime preparedAt) { this.preparedAt = preparedAt; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public LocalDateTime getExpiryTime() { return expiryTime; }
-    public void setExpiryTime(LocalDateTime expiryTime) { this.expiryTime = expiryTime; }
+    public BigDecimal getQuantity() {
+        return quantity;
+    }
 
-    public String getPickupAddress() { return pickupAddress; }
-    public void setPickupAddress(String pickupAddress) { this.pickupAddress = pickupAddress; }
+    public void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity;
+    }
 
-    public String getContactNumber() { return contactNumber; }
-    public void setContactNumber(String contactNumber) { this.contactNumber = contactNumber; }
+    public String getUnit() {
+        return unit;
+    }
 
-    public String getInstructions() { return instructions; }
-    public void setInstructions(String instructions) { this.instructions = instructions; }
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
 
-    public String getStatus() { return status; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public String getFoodType() {
+        return foodType;
+    }
+
+    public void setFoodType(String foodType) {
+        this.foodType = foodType;
+    }
+
+    public LocalDateTime getPreparedAt() {
+        return preparedAt;
+    }
+
+    public void setPreparedAt(LocalDateTime preparedAt) {
+        this.preparedAt = preparedAt;
+    }
+
+    public LocalDateTime getExpiryTime() {
+        return expiryTime;
+    }
+
+    public void setExpiryTime(LocalDateTime expiryTime) {
+        this.expiryTime = expiryTime;
+    }
+
+    public String getPickupAddress() {
+        return pickupAddress;
+    }
+
+    public void setPickupAddress(String pickupAddress) {
+        this.pickupAddress = pickupAddress;
+    }
+
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+    }
+
+    public String getInstructions() {
+        return instructions;
+    }
+
+    public void setInstructions(String instructions) {
+        this.instructions = instructions;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }
-

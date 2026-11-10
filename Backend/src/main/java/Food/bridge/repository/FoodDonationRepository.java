@@ -1,4 +1,5 @@
 
+
 package Food.bridge.repository;
 
 import Food.bridge.entity.FoodDonation;
@@ -8,6 +9,9 @@ import java.util.List;
 public interface FoodDonationRepository
         extends JpaRepository<FoodDonation, Integer> {
 
+    // Fetch all donations with a particular status
     List<FoodDonation> findByStatus(String status);
-}
 
+    // Fetch all donations submitted by a particular donor
+    List<FoodDonation> findByDonor_DonorId(Integer donorId);
+}
